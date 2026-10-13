@@ -183,22 +183,22 @@ class SettingsFragment : Fragment() {
         }
 
         // Social Media Community Buttons
-        binding.btnSocialTelegram.setOnClickListener {
-            openUrl("https://t.me/jonny_baba045)
-        }
+        // Social Media Community Buttons
+binding.btnSocialTelegram.setOnClickListener {
+    openUrl("https://t.me/jonny_baba045")
+}
 
-        binding.btnSocialInstagram.setOnClickListener {
-            openUrl("https://www.instagram.com/aibhav45")
-        }
+binding.btnSocialInstagram.setOnClickListener {
+    openUrl("https://www.instagram.com/aibhav45")
+}
 
-        binding.btnSocialYoutube.setOnClickListener {
-            openUrl("https://youtube.com/@factsaibhav")
-        }
+binding.btnSocialYoutube.setOnClickListener {
+    openUrl("https://youtube.com/@factsaibhav")
+}
 
-        binding.tvFooterCredit.setOnClickListener {
-            openUrl("https://t.me/jonny_baba045")
-        }
-    }
+binding.tvFooterCredit.setOnClickListener {
+    openUrl("https://t.me/jonny_baba045")
+}
 
     private fun showLanguageDialog() {
         val languages = GeminiConstants.SUPPORTED_LANGUAGES.toTypedArray()
