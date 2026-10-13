@@ -199,7 +199,7 @@ binding.btnSocialYoutube.setOnClickListener {
 binding.tvFooterCredit.setOnClickListener {
     openUrl("https://t.me/jonny_baba045")
 }
-
+    }
     private fun showLanguageDialog() {
         val languages = GeminiConstants.SUPPORTED_LANGUAGES.toTypedArray()
         val currentIndex = languages.indexOfFirst { it.equals(preferences.language, ignoreCase = true) }.let { if (it >= 0) it else 0 }
