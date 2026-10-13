@@ -182,11 +182,6 @@ class SettingsFragment : Fragment() {
             startActivity(Intent(requireContext(), PrivacyShieldActivity::class.java))
         }
 
-        // JARVIS Firebase Admin Panel
-        binding.rowAdminPanel.setOnClickListener {
-            openUrl("https://jarvis-remote-control.web.app")
-        }
-
         // Social Media Community Buttons
         binding.btnSocialTelegram.setOnClickListener {
             openUrl("https://t.me/+sYana61LvHdmZmE1")
