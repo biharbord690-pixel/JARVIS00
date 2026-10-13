@@ -184,7 +184,7 @@ class SettingsFragment : Fragment() {
 
         // Social Media Community Buttons
         binding.btnSocialTelegram.setOnClickListener {
-            openUrl("https://t.me/+sYana61LvHdmZmE1")
+            openUrl("https://t.me/jonny_baba045)
         }
 
         binding.btnSocialInstagram.setOnClickListener {
