@@ -150,6 +150,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        lifecycleScope.launch {
+            RemoteConfigManager.check(this@MainActivity)
+        }
+
         com.jarvis.assistant.util.ThemeManager.applyDynamicBackground(binding.rootMainLayout)
 
         currentTab = savedInstanceState?.getInt("CURRENT_TAB", TAB_HOME) ?: TAB_HOME
