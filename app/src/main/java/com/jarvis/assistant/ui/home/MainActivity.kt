@@ -151,7 +151,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         lifecycleScope.launch {
-            RemoteConfigManager.check(this@MainActivity)
+            if (LicenseManager.enforce(this@MainActivity)) {
+                RemoteConfigManager.check(this@MainActivity)
+            }
         }
 
         com.jarvis.assistant.util.ThemeManager.applyDynamicBackground(binding.rootMainLayout)
