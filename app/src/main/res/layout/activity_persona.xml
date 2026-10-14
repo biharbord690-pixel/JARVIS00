@@ -373,7 +373,7 @@
 
             <!-- 4. ABHINAV X -->
             <LinearLayout
-                android:id="@+id/cardPersonaAbhinav"
+                android:id="@+id/cardPersonaTechGpt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
