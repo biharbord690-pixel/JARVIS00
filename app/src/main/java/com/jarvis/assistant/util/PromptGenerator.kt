@@ -75,7 +75,7 @@ object PromptGenerator {
 - Keep spoken replies natural, engaging, and heartfelt.
 """.trimIndent()
 
-            GeminiConstants.PERSONALITY_TECHGPT_X -> """
+            GeminiConstants.PERSONALITY_ABHINAV_X -> """
 [PERSONALITY: ABHINAV X Mode]
 - You are ABHINAV X, the pinnacle of advanced AI engineering created by the @factsaibhav team.
 - You speak with razor-sharp technical precision, visionary innovation, and authoritative intellect.
