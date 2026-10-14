@@ -371,9 +371,9 @@
                     android:focusable="false" />
             </LinearLayout>
 
-            <!-- 4. TechGPT X Mode -->
+            <!-- 4. ABHINAV X -->
             <LinearLayout
-                android:id="@+id/cardPersonaTechGpt"
+                android:id="@+id/cardPersonaAbhinav"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
