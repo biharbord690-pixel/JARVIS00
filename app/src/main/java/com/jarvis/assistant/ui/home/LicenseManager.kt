@@ -8,6 +8,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
@@ -110,7 +111,7 @@ object LicenseManager {
                 InputFilter.LengthFilter(8),
                 InputFilter.AllCaps()
             )
-            singleLine = true
+            setSingleLine(true)
         }
 
         val status = TextView(activity).apply {
@@ -161,7 +162,14 @@ object LicenseManager {
                 button.isEnabled = false
                 status.text = "Verifying license..."
 
-                activity.lifecycleScope.launch {
+                val owner = activity as? LifecycleOwner
+                if (owner == null) {
+                    status.text = "Unable to verify license right now."
+                    button.isEnabled = true
+                    return@setOnClickListener
+                }
+
+                owner.lifecycleScope.launch {
                     when (verify(entered)) {
                         Result.VALID -> {
                             prefs.edit().putString(KEY, entered).apply()
