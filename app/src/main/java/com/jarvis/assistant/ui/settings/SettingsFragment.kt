@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.jarvis.assistant.JarvisApp
 import com.jarvis.assistant.R
+import com.jarvis.assistant.ui.home.RemoteConfigManager
 import com.jarvis.assistant.data.model.GeminiConstants
 import com.jarvis.assistant.databinding.FragmentSettingsBinding
 import com.jarvis.assistant.ui.memory.MemoryActivity
@@ -41,6 +42,7 @@ class SettingsFragment : Fragment() {
         com.jarvis.assistant.util.ThemeManager.applyDynamicBackground(binding.root)
 
         loadUserData()
+        applyRemoteBranding()
         setupClickListeners()
     }
 
@@ -49,6 +51,7 @@ class SettingsFragment : Fragment() {
         if (_binding != null) {
             com.jarvis.assistant.util.ThemeManager.applyDynamicBackground(binding.root)
             loadUserData()
+            applyRemoteBranding()
         }
     }
 
@@ -64,7 +67,7 @@ class SettingsFragment : Fragment() {
     }
 
     private fun loadUserData() {
-        val userName = preferences.userName.ifBlank { "Abhinav" }
+        val userName = preferences.userName.ifBlank { "Rehaan" }
         binding.tvProfileName.text = userName
         binding.tvProfileSubtitle.text = "JARVIS OPERATOR • PRIMARY USER"
 
@@ -183,23 +186,49 @@ class SettingsFragment : Fragment() {
         }
 
         // Social Media Community Buttons
-        // Social Media Community Buttons
-binding.btnSocialTelegram.setOnClickListener {
-    openUrl("https://t.me/jonny_baba045")
-}
+        binding.btnSocialTelegram.setOnClickListener {
+            openUrl("https://t.me/+sYana61LvHdmZmE1")
+        }
 
-binding.btnSocialInstagram.setOnClickListener {
-    openUrl("https://www.instagram.com/aibhav45")
-}
+        binding.btnSocialInstagram.setOnClickListener {
+            val configuredUrl = RemoteConfigManager.currentConfig
+                ?.instagramUrl?.trim().orEmpty()
+            val uri = runCatching { Uri.parse(configuredUrl) }.getOrNull()
+            val safeUrl = if (
+                uri?.scheme == "https" &&
+                uri.host?.equals("www.instagram.com", ignoreCase = true) == true
+            ) {
+                configuredUrl
+            } else {
+                "https://www.instagram.com/aibhav45"
+            }
+            openUrl(safeUrl)
+        }
 
-binding.btnSocialYoutube.setOnClickListener {
-    openUrl("https://youtube.com/@factsaibhav")
-}
+        binding.btnSocialYoutube.setOnClickListener {
+            openUrl("https://youtube.com/@factsaibhav")
+        }
 
-binding.tvFooterCredit.setOnClickListener {
-    openUrl("https://t.me/jonny_baba045")
-}
+        binding.tvFooterCredit.setOnClickListener {
+            openUrl("https://t.me/jonny_baba045")
+        }
     }
+
+    private fun applyRemoteBranding() {
+        val config = RemoteConfigManager.currentConfig
+        val appName = config?.appDisplayName
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: "JARVIS INTELLIGENCE OS"
+        val owner = config?.ownerName
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+            ?: "ABHINAV ANAND"
+
+        binding.tvFooterCredit.text =
+            "$appName • v3.1 PRO\nEngineered by $owner"
+    }
+
     private fun showLanguageDialog() {
         val languages = GeminiConstants.SUPPORTED_LANGUAGES.toTypedArray()
         val currentIndex = languages.indexOfFirst { it.equals(preferences.language, ignoreCase = true) }.let { if (it >= 0) it else 0 }
@@ -234,7 +263,7 @@ binding.tvFooterCredit.setOnClickListener {
 
     private fun showEditNameDialog() {
         val input = EditText(requireContext()).apply {
-            setText(preferences.userName.ifBlank { "Abhinav" })
+            setText(preferences.userName.ifBlank { "Rehaan" })
             setSelection(text.length)
         }
         MaterialAlertDialogBuilder(requireContext())

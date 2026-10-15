@@ -1,10 +1,6 @@
 package com.jarvis.assistant.ui.home
 
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
@@ -12,10 +8,21 @@ import okhttp3.Request
 import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
+data class JarvisRemoteConfig(
+    val maintenanceMode: Boolean,
+    val maintenanceMessage: String,
+    val updateRequired: Boolean,
+    val appDisplayName: String,
+    val ownerName: String,
+    val instagramUrl: String,
+    val licenseRequired: Boolean,
+    val keylessMode: Boolean
+)
+
 object RemoteConfigManager {
-
+    @Volatile
+    var currentConfig: JarvisRemoteConfig? = null
     private const val TAG = "JARVIS_RemoteConfig"
-
     private const val CONFIG_URL =
         "https://jarvis-remote-control-default-rtdb.firebaseio.com/config.json"
 
@@ -25,74 +32,65 @@ object RemoteConfigManager {
         .callTimeout(12, TimeUnit.SECONDS)
         .build()
 
-    suspend fun check(activity: Activity) {
-        val config = withContext(Dispatchers.IO) {
-            try {
-                val request = Request.Builder()
-                    .url(CONFIG_URL)
-                    .get()
-                    .build()
+    suspend fun fetch(): JarvisRemoteConfig? = withContext(Dispatchers.IO) {
+        try {
+            val request = Request.Builder()
+                .url(CONFIG_URL)
+                .get()
+                .build()
 
-                client.newCall(request).execute().use { response ->
-                    if (!response.isSuccessful) {
-                        Log.e(TAG, "HTTP error: ${response.code}")
-                        return@withContext null
-                    }
-
-                    response.body?.string()?.let { JSONObject(it) }
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    Log.w(TAG, "Config HTTP status: ${response.code}")
+                    return@withContext null
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, "Could not load remote config", e)
-                null
-            }
-        } ?: return
 
-        if (activity.isFinishing || activity.isDestroyed) return
+                val body = response.body?.string()
+                    ?: return@withContext null
 
-        val maintenance = config.optBoolean("maintenanceCode", false)
-        val updateRequired = config.optBoolean("updateRequired", false)
-        val message = config.optString(
-            "maintenanceMessage",
-            "JARVIS is under maintenance. Please try again later."
-        )
-        val instagramUrl = config.optString("instagramurl", "")
-
-        if (maintenance) {
-            AlertDialog.Builder(activity)
-                .setTitle("JARVIS Maintenance")
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton("Close App") { _, _ ->
-                    activity.finishAffinity()
+                if (body == "null") {
+                    return@withContext null
                 }
-                .show()
-            return
-        }
 
-        if (updateRequired) {
-            val builder = AlertDialog.Builder(activity)
-                .setTitle("Update Required")
-                .setMessage(
-                    "A new version of JARVIS is required. Please get the latest version."
+                val json = JSONObject(body)
+
+                if (!json.has("maintenanceMode") ||
+                    !json.has("updateRequired") ||
+                    !json.has("licenseRequired") ||
+                    !json.has("keylessMode")
+                ) {
+                    Log.w(TAG, "Required config fields are missing")
+                    return@withContext null
+                }
+
+                val licenseRequired = json.getBoolean("licenseRequired")
+                val keylessMode = json.getBoolean("keylessMode")
+
+                if (licenseRequired == keylessMode) {
+                    Log.w(TAG, "Invalid license/keyless configuration")
+                    return@withContext null
+                }
+
+                JarvisRemoteConfig(
+                    maintenanceMode = json.getBoolean("maintenanceMode"),
+                    maintenanceMessage = json.optString(
+                        "maintenanceMessage",
+                        "JARVIS is temporarily under maintenance."
+                    ),
+                    updateRequired = json.getBoolean("updateRequired"),
+                    appDisplayName = json.optString(
+                        "appDisplayName",
+                        "JARVIS INTELLIGENCE OS"
+                    ),
+                    ownerName = json.optString("ownerName", ""),
+                    instagramUrl = json.optString("instagramUrl", ""),
+                    licenseRequired = licenseRequired,
+                    keylessMode = keylessMode
                 )
-                .setCancelable(false)
-                .setPositiveButton("Close App") { _, _ ->
-                    activity.finishAffinity()
-                }
-
-            builder.setNeutralButton("Instagram") { _, _ ->
-                if (instagramUrl.startsWith("https://")) {
-                    try {
-                        activity.startActivity(
-                            Intent(Intent.ACTION_VIEW, Uri.parse(instagramUrl))
-                        )
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Could not open Instagram URL", e)
-                    }
-                }
             }
-
-            builder.show()
+        } catch (e: Exception) {
+            Log.w(TAG, "Could not verify remote configuration", e)
+            null
         }
     }
 }
