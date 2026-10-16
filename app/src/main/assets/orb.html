@@ -79,7 +79,7 @@ html, body {
   animation: portraitPulse 3s ease-in-out infinite;
   pointer-events: none;
 }
-#portrait-ring img {
+#portrait-ring video {
   display: block;
   width: 100%;
   height: 100%;
@@ -101,11 +101,12 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   #portrait-ring { animation: none; }
 }
-\n</style>
+
+</style>
 </head>
 <body class="embedded">
 <div id="stage"><canvas id="c"></canvas><div id="shadow"></div></div>
-<div id="portrait-ring" aria-hidden="true"><img src="Jarvis.png" alt=""></div>
+<div id="portrait-ring" aria-hidden="true"><video id="jiya-video" autoplay muted loop playsinline preload="auto"><source src="jiya_idle.mp4" type="video/mp4"></video></div>
 
 <script src="three.min.js"></script>
 <script>
@@ -290,10 +291,33 @@ function applyTheme(name,custom){
 
 /* ---------- State ---------- */
 let state="idle";
+
+function setJiyaVideoForState(s){
+  const video = document.getElementById("jiya-video");
+  if(!video) return;
+
+  let file = "jiya_idle.mp4";
+  if(s === "listening"){
+    file = "jiya_listening.mp4";
+  } else if(s === "speaking" || s === "talking"){
+    file = "jiya_talking.mp4";
+  }
+
+  if(video.dataset.currentFile === file) return;
+
+  video.dataset.currentFile = file;
+  video.src = file;
+  video.load();
+
+  const playback = video.play();
+  if(playback && playback.catch){
+    playback.catch(() => {});
+  }
+}
 const cur=Object.assign({},STATES.idle),tgt=Object.assign({},STATES.idle);
 function setOrbState(s){
   if(!STATES[s]) return;
-  state=s;Object.assign(tgt,STATES[s]);
+  state=s;Object.assign(tgt,STATES[s]);setJiyaVideoForState(s);
   const lbl = $("#stext");
   if(lbl) lbl.textContent=LABELS[s] || "READY";
   document.querySelectorAll("[data-s]").forEach(b=>b.classList.toggle("on",b.dataset.s===s));
