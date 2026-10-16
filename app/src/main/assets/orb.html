@@ -64,18 +64,13 @@ html, body {
   z-index: 5;
   left: 50%;
   top: 50%;
-  width: min(58vw, 58vh);
+  width: min(78vw, 78vh, 520px);
   aspect-ratio: 1 / 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  padding: 4px;
-  background: conic-gradient(
-    from 0deg,
-    #ff4fd8, #8b5cf6, #42dfff, #ff4fd8
-  );
-  box-shadow:
-    0 0 16px rgba(255, 79, 216, .65),
-    0 0 38px rgba(139, 92, 246, .48);
+  padding: 0;
+  background: transparent;
+  box-shadow: 0 0 22px rgba(139, 92, 246, .38);
   animation: portraitPulse 3s ease-in-out infinite;
   pointer-events: none;
 }
@@ -106,7 +101,7 @@ html, body {
 </head>
 <body class="embedded">
 <div id="stage"><canvas id="c"></canvas><div id="shadow"></div></div>
-<div id="portrait-ring" aria-hidden="true"><video id="jiya-video" autoplay muted loop playsinline preload="auto"><source src="jiya_idle.mp4" type="video/mp4"></video></div>
+<div id="portrait-ring" aria-hidden="true"><video id="jiya-video" autoplay muted loop playsinline preload="auto" src="jiya_listening.mp4"></video></div>
 
 <script src="three.min.js"></script>
 <script>
@@ -295,25 +290,14 @@ let state="idle";
 function setJiyaVideoForState(s){
   const video = document.getElementById("jiya-video");
   if(!video) return;
-
-  let file = "jiya_idle.mp4";
-  if(s === "listening"){
-    file = "jiya_listening.mp4";
-  } else if(s === "speaking" || s === "talking"){
-    file = "jiya_talking.mp4";
+  if(!video.src.endsWith("/jiya_listening.mp4")){
+    video.src = "jiya_listening.mp4";
+    video.load();
   }
-
-  if(video.dataset.currentFile === file) return;
-
-  video.dataset.currentFile = file;
-  video.src = file;
-  video.load();
-
   const playback = video.play();
-  if(playback && playback.catch){
-    playback.catch(() => {});
-  }
+  if(playback && playback.catch) playback.catch(() => {});
 }
+
 const cur=Object.assign({},STATES.idle),tgt=Object.assign({},STATES.idle);
 function setOrbState(s){
   if(!STATES[s]) return;
