@@ -185,6 +185,12 @@ class SettingsFragment : Fragment() {
             startActivity(Intent(requireContext(), PrivacyShieldActivity::class.java))
         }
 
+        // Open the existing Updates tab.
+        binding.rowFeatureUpdates.setOnClickListener {
+            (activity as? com.jarvis.assistant.ui.home.MainActivity)
+                ?.selectTab(com.jarvis.assistant.ui.home.MainActivity.TAB_UPDATES)
+        }
+
         // Social Media Community Buttons
         binding.btnSocialTelegram.setOnClickListener {
             openUrl("https://t.me/+sYana61LvHdmZmE1")

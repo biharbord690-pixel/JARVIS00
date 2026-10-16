@@ -72,6 +72,26 @@ class UpdatesFragment : Fragment() {
                 setTextColor(themeColor(com.jarvis.assistant.R.attr.themeTextMuted))
                 setLineSpacing(dp(2).toFloat(), 1f)
             })
+            card.isClickable = true
+            card.isFocusable = true
+            card.contentDescription = "${feature.feature}: ${feature.title}. Tap for details."
+            card.setOnClickListener {
+                val status = when (feature.feature) {
+                    "Google Flow / AI Studio", "Instagram" -> "DIAGNOSTIC — last recorded result was not verified as complete."
+                    "WhatsApp" -> "PERMISSION REQUIRED — contact lookup needs Contacts access. Message reading is not confirmed as implemented."
+                    "Phone calls" -> "PERMISSION REQUIRED — calling depends on granted permissions. Incoming-call announcements are planned, not confirmed active."
+                    "Permissions" -> "AVAILABLE — opens the existing permissions screen; each permission must still be checked on the device."
+                    "Floating avatar", "Task progress", "Silent execution", "Appearance", "AI persona",
+                    "Agent tasks", "Spotify" -> "STATUS DEPENDS ON THIS BUILD AND THE REQUIRED DEVICE ACCESS."
+                    else -> "CHECK THE CURRENT BUILD AND DEVICE PERMISSIONS."
+                }
+                androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                    .setTitle(feature.feature + " — " + feature.title)
+                    .setMessage(feature.details + "\n\nStatus: " + status +
+                        "\n\nPlanned integrations are not active until implemented and tested.")
+                    .setPositiveButton("Close", null)
+                    .show()
+            }
             list.addView(card)
         }
     }

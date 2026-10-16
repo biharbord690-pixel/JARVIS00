@@ -1035,6 +1035,22 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Feature Updates -->
+            <TextView
+                android:id="@+id/rowFeatureUpdates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_jarvis_card"
+                android:padding="18dp"
+                android:text="✦  FEATURE UPDATES     ›\nSee features, permissions and availability"
+                android:textColor="?attr/themeTextPrimary"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif-medium"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Feature Updates. Tap to view feature details." />
+
             <!-- Social Community Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
